@@ -1,0 +1,61 @@
+****** One-Time Jenkins Installation ******
+Java JDK 8+, jenkins installation (.war file we need finally)
+
+
+****** Run Jenkins on local ******
+go to dir where jenkins.war is present / installed
+C:\Program Files\Jenkins
+run command
+java -jar jenkins.war --httpPort=8080
+on browser open Jenkins Dashboard http://localhost:8080
+login with username and password
+
+
+****** One-time Jenkins Management per Project ******
+Jenkins Dashboard -> Manage Jenkins -> Tools
+    JDK - Path of machine's jdk folder
+    GIT - Path on machine for git.exe
+
+Manage Jenkins -> System -> Paths -> Env Var
+    Python
+    Python_Home
+    Path = path in your machine for python folder
+
+    Python_Script
+    path in your machine for python/scripts folder
+
+
+****** Project - Continuous Deployment ****** 
+When you manually / schedule periodic build in Jenkins then
+Jenkins will fetch changes from GitHub (or your predefined source)
+and then based on Your defined Pre/Post build actions, it will execute windows batch/shell commands one-after-other (build pipeline)
+So create/set up this project as follows-
+
+    Create project
+        Jenkins Dashboard
+        New Item - Freestyle
+        SCM = Git, GitHub Repo URL
+        from here Jenkins will fetch code changes
+
+    Set up Env Var by windows shell command in project build in Jenkins
+        Build
+        execute windows batch
+        set Path=%Python_Home%;%Path%
+        
+    Download dependencies (add in same build section as above)
+        execute batch file that we created in project
+        batchfilename.bat
+        
+    Execute Test Cases
+        execute batch file in build section as above for running
+        batchfilename2.bat (or directly add command pytest -s -v alluredir ...)
+        exit 0
+
+    Integrating Allure Reports
+	Post Build Steps
+		Allure Report
+		Path - relative location from project ws where allure json results are generated
+			(depends on project see where pytest command --alluredir flag is pointing)
+		
+		Advanced
+		Path - relative project ws location where you want allure report to be saved
